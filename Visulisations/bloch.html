@@ -1,0 +1,619 @@
+
+<!doctype html>
+
+<head>
+	<title>Bloch Sphere</title>
+	<meta charset="utf-8">
+	
+</head>
+<body>
+
+<script src="http://threejs.org/build/three.min.js"></script>
+<script src="http://threejs.org/examples/js/controls/OrbitControls.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.5/dat.gui.min.js"></script>
+ <script  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_SVG">
+  </script>
+<script>
+var scene = new THREE.Scene();
+var camera = new THREE.PerspectiveCamera(50, 500 / 400, 0.1, 1000);
+
+
+
+
+var scaleeverything = 20;
+
+camera.lookAt(scene.position);
+var controls;
+//var container = document.getElementById('.wpd3-41-2')
+  renderer = new THREE.WebGLRenderer({
+        antialias: false
+    });
+renderer.setSize(500, 400);
+renderer.setClearColor(0xDDDDDD);
+document.body.appendChild(renderer.domElement);
+
+
+
+  var x,y,z,theta,phi,phil,thetal;
+  
+  theta=0;
+  phi=1;
+  thetal=0;
+  phil=0;
+
+
+
+controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+var func = function(){
+this.Phi = 0.5;
+this.Theta = 0.5;
+}
+
+  var text = new func()
+
+var gui = new dat.GUI()
+
+  gui.add(text, 'Phi', 0, Math.PI).onChange(function(newValue) {
+	phi = newValue});
+    gui.add(text, 'Theta', 0, 2*Math.PI).onChange(function(newValue) {
+	theta = newValue});
+
+
+
+
+
+
+
+var myMaterial1 = {
+    wireframe : false,
+    wireframeLinewidth : 20,
+    color: 0x888888
+}
+var myMaterial2 = {
+    wireframe : false,
+    wireframeLinewidth : 10,
+    color: 0x000000
+}
+var geometry2 = new THREE.SphereGeometry(0.2*scaleeverything, 50, 50, 0, Math.PI * 2, 0, Math.PI * 2);
+var material2 = new THREE.MeshPhongMaterial( myMaterial2 );
+var cube2 = new THREE.Mesh(geometry2, material2);
+
+var geometry3 = new THREE.SphereGeometry(1.5*scaleeverything, 50, 50, 0, Math.PI * 2, 0, Math.PI * 2);
+var material = new THREE.MeshPhongMaterial( myMaterial1 );
+var cube3 = new THREE.Mesh(geometry3, material);
+
+var geometry = new THREE.SphereGeometry(3*scaleeverything, 50, 50, 0, Math.PI * 2, 0, Math.PI * 2);
+
+
+
+//-------------TEXT-------------------------------------
+function roundRect(ctx, x, y, w, h, r) 
+{
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.lineTo(x+w-r, y);
+    ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+    ctx.lineTo(x+w, y+h-r);
+    ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+    ctx.lineTo(x+r, y+h);
+    ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+    ctx.lineTo(x, y+r);
+    ctx.quadraticCurveTo(x, y, x+r, y);
+    ctx.closePath();
+    ctx.fill();
+	ctx.stroke();   
+}
+
+
+
+    function makeTextSprite( message, parameters )
+    {
+        if ( parameters === undefined ) parameters = {};
+        var fontface = parameters.hasOwnProperty("fontface") ? parameters["fontface"] : "Arial";
+        var fontsize = parameters.hasOwnProperty("fontsize") ? parameters["fontsize"] : 18;
+        var borderThickness = parameters.hasOwnProperty("borderThickness") ? parameters["borderThickness"] : 4;
+        var borderColor = parameters.hasOwnProperty("borderColor") ?parameters["borderColor"] : { r:0, g:0, b:0, a:1.0 };
+        var backgroundColor = parameters.hasOwnProperty("backgroundColor") ?parameters["backgroundColor"] : { r:255, g:255, b:255, a:1.0 };
+        var textColor = parameters.hasOwnProperty("textColor") ?parameters["textColor"] : { r:0, g:0, b:0, a:1.0 };
+
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+        context.font = "Bold " + fontsize + "px " + fontface;
+        var metrics = context.measureText( message );
+        var textWidth = metrics.width;
+
+        context.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + "," + backgroundColor.b + "," + backgroundColor.a + ")";
+        context.strokeStyle = "rgba(" + borderColor.r + "," + borderColor.g + "," + borderColor.b + "," + borderColor.a + ")";
+
+        context.lineWidth = borderThickness;
+        roundRect(context, borderThickness/2, borderThickness/2, (textWidth + borderThickness) * 1.1, fontsize * 1.4 + borderThickness, 8);
+
+        context.fillStyle = "rgba("+textColor.r+", "+textColor.g+", "+textColor.b+", 1.0)";
+        context.fillText( message, borderThickness, fontsize + borderThickness);
+
+        var texture = new THREE.Texture(canvas) 
+        texture.needsUpdate = true;
+
+        var spriteMaterial = new THREE.SpriteMaterial( { map: texture, useScreenCoordinates: false } );
+        var sprite = new THREE.Sprite( spriteMaterial );
+        sprite.scale.set(0.5 * fontsize, 0.25 * fontsize, 0.75 * fontsize);
+        return sprite;  
+    }
+//_________________________TEXT______________________________________________
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var cube = new THREE.Mesh(geometry, material);
+material.transparent = true;
+material.opacity = 0.25;
+  var materialz = new THREE.LineBasicMaterial({
+	color: 0x000000,
+	linewidth: 3
+});
+
+
+
+
+var createAxis=function(src,dst,colorHex,dashed){
+    var geom = new THREE.Geometry(),
+        mat; 
+
+    if(dashed) {
+        mat = new THREE.LineDashedMaterial(
+            { 
+                linewidth: 5, 
+                color: colorHex, 
+                dashSize: 0.5*scaleeverything, 
+                gapSize: 0.5*scaleeverything 
+             });
+    } 
+    else {
+        mat = new THREE.LineBasicMaterial(
+            { 
+                linewidth: 5, 
+                color: colorHex 
+            });
+    }
+
+    geom.vertices.push( src.clone() );
+    geom.vertices.push( dst.clone() );
+    // This one is SUPER important, otherwise 
+    // dashed lines will appear as simple plain 
+    // lines
+    geom.computeLineDistances(); 
+
+    var axis = new THREE.Line( 
+        geom, mat, THREE.LinePieces );
+
+    return axis;
+}
+
+
+
+
+var createAxes = function(length){
+    var axes = new THREE.Object3D();
+        axes.add( createAxis( 
+        new THREE.Vector3( 0, 0, 0 ), 
+        new THREE.Vector3( length, 0, 0 ), 
+        'red', false ) ); // +X
+            axes.add( createAxis( 
+        new THREE.Vector3( 0, 0, 0 ), 
+        new THREE.Vector3( -length, 0, 0 ), 
+        'red', true) ); // -X
+        
+    axes.add( createAxis( 
+        new THREE.Vector3( 0, 0, 0 ), 
+        new THREE.Vector3( 0, length, 0 ), 
+        'blue', false ) ); // +Y
+    
+    axes.add( createAxis( 
+        new THREE.Vector3( 0, 0, 0 ), 
+        new THREE.Vector3( 0, -length, 0 ),
+        'blue', true ) ); // -Y
+    
+    axes.add( createAxis( 
+        new THREE.Vector3( 0, 0, 0 ), 
+        new THREE.Vector3( 0, 0, length ), 
+        'green', false ) ); // +Z
+    
+    axes.add( createAxis( 
+        new THREE.Vector3( 0, 0, 0 ), 
+        new THREE.Vector3( 0, 0, -length ), 
+        'green', true ) ); // -Z
+    
+
+
+
+
+     return axes;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+var geometry = new THREE.Geometry();
+geometry.vertices.push(
+	p1 = new THREE.Vector3( 0, 0, 0 ),
+	p2 = new THREE.Vector3( 3, 0, 0 )
+
+);
+var line = new THREE.Line( geometry, materialz );
+var geometry = new THREE.CylinderGeometry( 0, 0.3*scaleeverything, 3*scaleeverything, 50,50 );
+
+geometry.translate( 0, 3*scaleeverything/2, 0 ); 
+var material = new THREE.MeshBasicMaterial( {color: 0x555555} );
+var cylinder = new THREE.Mesh( geometry, material );
+cylinder.position.y =0;
+scene.add( cylinder );
+//scene.add( line );
+scene.add(cube);
+//scene.add(cube3);
+scene.add(cube2);
+scene.add(createAxes(100*scaleeverything));
+
+
+
+
+	var spritey = makeTextSprite( "X", 
+		{ fontsize: 55, borderColor: {r:255, g:0, b:0, a:1.0}, backgroundColor: {r:255, g:100, b:100, a:0.8} } );
+	spritey.position.set(4*scaleeverything,0,0);
+	scene.add( spritey );
+
+	var spritey = makeTextSprite( "Y: +i", 
+		{ fontsize: 55, fontface: "Georgia", borderColor: {r:0, g:255, b:0, a:1.0} } );
+	spritey.position.set(0,0,4*scaleeverything);
+	scene.add( spritey );
+  
+  var spritey = makeTextSprite( "Z: |1>", 
+		{ fontsize: 60, fontface: "Georgia", borderColor: {r:0, g:0, b:255, a:1.0} } );
+	spritey.position.set(0,4*scaleeverything,0);
+	scene.add( spritey );
+    var spritey = makeTextSprite( "-Z: |0>", 
+		{ fontsize: 60, fontface: "Georgia", borderColor: {r:0, g:0, b:255, a:1.0} } );
+	spritey.position.set(0,-4*scaleeverything,0);
+	scene.add( spritey );
+
+
+
+
+
+
+
+
+var radius   = 3*scaleeverything,
+    segments = 64,
+    materialc = new THREE.LineBasicMaterial( { color: 0x00ffff } ),
+    circleg = new THREE.CircleGeometry( radius, segments );
+
+// Remove center vertex
+circleg.vertices.shift();
+var circle =new THREE.Line( circleg, materialc ) ;
+
+scene.add( circle);
+  var rmcir = new THREE.Matrix4().makeRotationY(1.5);
+  
+ circle.rotation.x = Math.PI/2;
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ var radius   = 3*scaleeverything,
+    segments = 64,
+    materialc = new THREE.LineBasicMaterial( { color: 0xff9933} ),
+    circleg = new THREE.CircleGeometry( radius, segments,-Math.PI/2, Math.PI );
+
+// Remove center vertex
+circleg.vertices.shift();
+var circle2 =new THREE.Line( circleg, materialc ) ;
+
+scene.add( circle2);
+
+
+
+
+
+
+
+
+
+var pointLight = new THREE.PointLight(0xBBBBBB);
+
+// and set its position
+pointLight.position.x = -100;
+pointLight.position.y = 100;
+pointLight.position.z = 400;
+
+// Now, we can add it to the scene
+scene.add( pointLight );
+
+ light = new THREE.AmbientLight( 0x666666 );
+  scene.add( light );
+
+var statictext = document.createElement('div');
+statictext.style.position = 'absolute';
+//text2.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
+statictext.style.width = 100;
+statictext.style.height = 100;
+statictext.innerHTML = 'State: <math display=\"block\"><mfenced open="|" close="&#x3009;"><mi>&#x3C8;</mi></mfenced><mo>=</mo></math>'
+
+statictext.style.top = 340 + 'px';
+statictext.style.left = 8 + 'px';
+document.body.appendChild(statictext);
+
+var stateupt = document.createElement('div');
+stateupt.style.position = 'absolute';
+//text2.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
+stateupt.style.width = 100;
+stateupt.style.height = 100;
+stateupt.innerHTML = ' 0.00'
+
+stateupt.style.top = 375 + 'px';
+stateupt.style.left = 50 + 'px';
+document.body.appendChild(stateupt);
+
+
+
+var stateupstat = document.createElement('div');
+stateupstat.style.position = 'absolute';
+//text2.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
+stateupstat.style.width = 100;
+stateupstat.style.height = 100;
+stateupstat.innerHTML = '<math display=\"block\"><mfenced open="|" close="&#x3009;"><mi>1</mi></mfenced></math>'
+
+stateupstat.style.top = 358 + 'px';
+stateupstat.style.left = 79+ 'px';
+document.body.appendChild(stateupstat);
+
+
+var statedownt = document.createElement('div');
+statedownt.style.position = 'absolute';
+//text2.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
+statedownt.style.width = 100;
+statedownt.style.height = 100;
+statedownt.innerHTML = '+ ( 0.00+0.00i)'
+
+statedownt.style.top = 375 + 'px';
+statedownt.style.left = 100 + 'px';
+document.body.appendChild(statedownt);
+
+var statedownstat = document.createElement('div');
+statedownstat.style.position = 'absolute';
+//text2.style.zIndex = 1;    // if you still don't see the label, try uncommenting this
+statedownstat.style.width = 100;
+statedownstat.style.height = 100;
+statedownstat.innerHTML = '<math display=\"block\"><mfenced open="|" close="&#x3009;"><mi>0</mi></mfenced></math>'
+
+statedownstat.style.top = 358 + 'px';
+statedownstat.style.left = 214 + 'px';
+document.body.appendChild(statedownstat);
+
+
+camera.position.z = 7*scaleeverything;
+camera.position.x = 7*scaleeverything;
+camera.position.y = 2.5*scaleeverything;
+camera.lookAt(scene.position);
+
+
+var render = function () {
+    requestAnimationFrame(render);
+            var rm2= new THREE.Matrix4().makeRotationY(thetal-Math.PI/2);
+    
+   geometry.applyMatrix(rm2);
+    
+      var rm3= new THREE.Matrix4().makeRotationX(-phil);
+    geometry.applyMatrix(rm3);
+    
+  
+   
+    
+    
+   // theta =theta 0.001;
+   // if (theta>2*Math.PI){
+   // theta=0;
+ //   }
+ //theta += 0.05;
+    
+   // phi += 0.01;
+   // if (phi>Math.PI){
+   // phi = 0;
+   // theta+=Math.PI;
+   // }
+    
+   //  if (theta>2*Math.PI){
+   
+  //  theta=0;
+  // }
+    
+    x=Math.cos(phi);
+    
+    thetal=theta;
+    phil=phi;
+    
+
+    var stateup,statedownreal,statedownimag;
+    
+    stateup= Math.cos(phi/2);
+    statedownreal= Math.sin(phi/2)*Math.cos(theta);
+    statedownimag= Math.sin(phi/2)*Math.sin(theta);
+    
+    
+    
+
+    
+   x=3*scaleeverything*Math.cos(theta)*Math.sin(phi);
+   y=3*scaleeverything*Math.sin(theta)*Math.sin(phi);
+   z=3*scaleeverything*Math.cos(phi);
+
+
+   // cube2.rotation.y += 0.01;
+   
+   
+    var rm = new THREE.Matrix4().makeRotationY(0.01);
+    
+
+    
+    //pointLight.applyMatrix(rm);
+  //  cylinder.rotation.x += 0.01;
+ // cylinder.position.y = Math.cos(cylinder.rotation.x)*1.5;
+ //   cylinder.position.z = Math.sin(cylinder.rotation.x)*1.5;
+    
+  //cylinder.rotation.z += 0.01;
+  //cylinder.position.y = Math.cos(cylinder.rotation.z)*1.5;
+// cylinder.position.x = -Math.sin(cylinder.rotation.z)*1.5;
+ //  theta = Math.atan(cylinder.position.y/cylinder.position.x );
+  // phi = Math.acos(cylinder.position.z/1.5);
+ 
+
+ //cylinder.rotation.z = phi;
+  
+  
+  // var rotationx = Math.atan(y/z);
+ //  var rotationz = -Math.atan(x/z);
+   
+  
+ 
+  //cylinder.rotation.x = rotationx;
+// cylinder.rotation.z = rotationz;
+   
+
+      rm3= new THREE.Matrix4().makeRotationX(phi);
+    geometry.applyMatrix(rm3);
+    
+           rm2= new THREE.Matrix4().makeRotationY(-theta+Math.PI/2);
+    
+   geometry.applyMatrix(rm2);
+   
+   
+   
+   
+   
+   
+   
+   // cube2.position.x = Math.cos(cylinder.rotation.z)*3;
+   // cube2.position.x = -Math.sin(cylinder.rotation.z)*3;
+    
+   // cube2.position.y = Math.cos(cylinder.rotation.x)*3;
+    //cube2.position.z = Math.sin(cylinder.rotation.x)*3;
+    
+    cube2.position.x = x;
+    cube2.position.y = z;
+    cube2.position.z = y;
+    
+    
+    circle.position.y= cube2.position.y;
+    var targetlen =  Math.sin(phi)*1.5;
+     circle.scale.x = targetlen*2/3;
+  circle.scale.y = targetlen*2/3;
+  
+  var roty = Math.atan(cube2.position.x/cube2.position.z);
+  
+  circle2.rotation.y=-theta;
+  
+  //line
+  
+  
+    
+ 
+   line.applyMatrix(rm);
+  // var rm2= new THREE.Matrix4().makeRotationX(0.01);
+  // line.applyMatrix(rm2);
+      var rm3= new THREE.Matrix4().makeRotationZ(0.01);
+   line.applyMatrix(rm3);
+   
+   
+  
+   
+
+    
+    
+
+    renderer.render(scene, camera);
+    
+
+    
+    
+    
+   
+
+    
+    
+     
+    stateupt.innerHTML=stateup.toFixed(2);
+    if(statedownimag<0){
+    statedownt.innerHTML='+ ( '+statedownreal.toFixed(2)+' - '+Math.abs(statedownimag).toFixed(2)+'i )';
+    }else{
+    statedownt.innerHTML='+ ( '+statedownreal.toFixed(2)+' + '+statedownimag.toFixed(2)+'i )';
+    }
+    
+   
+         
+         
+
+
+
+
+    
+
+};
+
+render();
+</script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
