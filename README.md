@@ -1,5 +1,6 @@
 # Particality
-===================================PARTICALITY DOCUMENTATION==================================
+================================PARTICALITY DOCUMENTATION==================================
+
 [~1~] changes to hemingway theme
 
 [~2~] plugins
