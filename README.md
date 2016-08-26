@@ -494,6 +494,9 @@ To connect to the instance you need the .ppk file hopefully provided to you:
 
 
 
+for more information on how the server was set up see this youtube video:
+>https://www.youtube.com/watch?v=FVZ0zSIQlG0
+
 
 
 
@@ -509,3 +512,11 @@ To connect to the instance you need the .ppk file hopefully provided to you:
 
 if you try and include html in the title eg. <sup>2</sup> it will break the share buttons and the side bar. this is an error to do with the custom share button javascript 
 that i couldn't fix.
+
+
+if the website crashes and displays error conecting to database access the server and type the following two commands:
+>sudo su
+
+>service mysqld start
+
+
